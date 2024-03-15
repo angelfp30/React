@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react'
 const FollowMouse = () => {
   const [enabled, setEnabled] = useState(false)
   const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [clickCount, setClickCount] = useState(0)
+  const [clickerStyle, setClickerStyle] = useState({})
+
 
   // pointer move
   useEffect(() => {
@@ -40,6 +43,34 @@ const FollowMouse = () => {
     }
   }, [enabled])
 
+  
+  //click counter
+  const handleClick = () => {
+    setClickCount(clickCount + 1);
+    console.log(clickCount);
+
+    setClickerStyle({
+      ...clickerStyle,
+      left: `${Math.floor(Math.random() * 1301)}px`,
+      top: `${Math.floor(Math.random() * 520)}px`
+    })
+  }
+
+  useEffect(() => {
+    
+    const newClickerStyle = {
+      position: 'absolute',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      border: '1px solid #fff',
+      borderRadius: '20%',
+      opacity: 0.8,
+      color: '#fff',
+      ...clickerStyle
+    }
+    setClickerStyle(newClickerStyle)
+
+  }, [clickerStyle])
+
   return (
     <>
       <div style={{
@@ -49,16 +80,27 @@ const FollowMouse = () => {
         borderRadius: '50%',
         opacity: 0.8,
         pointerEvents: 'none',
-        left: -25,
-        top: -25,
-        width: 50,
-        height: 50,
+        left: -12,
+        top: -5,
+        width: 30,
+        height: 30,
         transform: `translate(${position.x}px, ${position.y}px)`
       }}
       />
       <button onClick={() => setEnabled(!enabled)}>
         {enabled ? 'Desactivar' : 'Activar'} seguir puntero
       </button>
+
+      <div className='clicker' onClick={
+          enabled ? handleClick : ''
+        } 
+        style={clickerStyle}>
+        Click me
+      </div>
+
+      <div className='score'>
+        Score: {clickCount}
+      </div>
     </>
   )
 }
