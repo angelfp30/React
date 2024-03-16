@@ -5,6 +5,8 @@ const FollowMouse = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [clickCount, setClickCount] = useState(0)
   const [clickerStyle, setClickerStyle] = useState({})
+  const [seconds, setSeconds] = useState(0)
+  const [isRunning, setIsRunning] = useState(false)
 
 
   // pointer move
@@ -50,29 +52,44 @@ const FollowMouse = () => {
     console.log(clickCount);
 
     setClickerStyle({
-      ...clickerStyle,
+      position: 'absolute',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      border: '1px solid #fff',
+      borderRadius: '30%',
+      opacity: 0.8,
+      fontSize: '0.9rem',
+      color: '#fff',
       left: `${Math.floor(Math.random() * 1301)}px`,
       top: `${Math.floor(Math.random() * 520)}px`
     })
   }
 
   useEffect(() => {
-    
-    const newClickerStyle = {
-      position: 'absolute',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      border: '1px solid #fff',
-      borderRadius: '20%',
-      opacity: 0.8,
-      color: '#fff',
-      ...clickerStyle
+    let intervalId
+    if (isRunning) {
+      intervalId = setInterval(() => {
+        setSeconds(prevSeconds => prevSeconds + 1);
+      }, 1000);
+    }  else {
+      clearInterval(intervalId)
     }
-    setClickerStyle(newClickerStyle)
+    return () => clearInterval(intervalId);
+  }, [isRunning]); 
+/*
+  const toggleTimer = () => {
+    setIsRunning(isRunning => !isRunning)
+  }*/
 
-  }, [clickerStyle])
+  const formatTime = (totalSeconds) => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
 
-  return (
+  return ( 
     <>
+    
       <div style={{
         position: 'absolute',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -80,26 +97,31 @@ const FollowMouse = () => {
         borderRadius: '50%',
         opacity: 0.8,
         pointerEvents: 'none',
-        left: -12,
-        top: -5,
-        width: 30,
-        height: 30,
+        left: -10,
+        top: -10,
+        width: 25,
+        height: 25,
         transform: `translate(${position.x}px, ${position.y}px)`
       }}
       />
-      <button onClick={() => setEnabled(!enabled)}>
-        {enabled ? 'Desactivar' : 'Activar'} seguir puntero
+      <div className='score'>
+        Score: {clickCount}
+      </div>
+      <button onClick={() => {
+        setEnabled(!enabled)
+        setIsRunning(!isRunning)
+      }}>
+        {enabled ? 'Pausar' : 'Empezar'} juego
       </button>
 
       <div className='clicker' onClick={
           enabled ? handleClick : ''
         } 
         style={clickerStyle}>
-        Click me
+         Click
       </div>
-
-      <div className='score'>
-        Score: {clickCount}
+      <div className="timer">
+        {formatTime(seconds)}
       </div>
     </>
   )
