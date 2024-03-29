@@ -58,6 +58,7 @@ function App() {
           }}
           onChange={handleChange} value={search} name='query' 
           type="text" placeholder="Barbie, Oppenheimer..." />
+          <label htmlFor="checkbox">Ordenar por título</label>
           <input type="checkbox" onChange={handleSort} checked={sort} />
           <button type="submit">Buscar</button>
         </form>
